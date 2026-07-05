@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+}
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  username          String    @unique
+  password          String?
+  emailVerified     DateTime?
+  verificationToken String?
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  balanceBtc        Float     @default(0)
+  balanceLtc        Float     @default(0)
+  balanceDoge       Float     @default(0)
+  xp                Int       @default(0)
+  level             Int       @default(1)
+  referralCode      String    @unique
+  referredBy        String?
+  isBanned          Boolean   @default(false)
+  isSuspended       Boolean   @default(false)
+  isVerified        Boolean   @default(false)
+  lastIp            String?
+  fingerprint       String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  lastLoginAt       DateTime?
+
+  claims            Claim[]
+  withdrawals       Withdrawal[]
+  shortlinkVisits   ShortlinkVisit[]
+  referralEarnings  ReferralEarning[] @relation("ReferrerEarnings")
+  dailyBonus        DailyBonus?
+  fraudFlags        FraudFlag[]
+
+  @@map("users")
+}
+
+model Claim {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  amount    Float
+  currency  String   @default("BTC")
+  ipAddress String?
+  userAgent String?
+  claimedAt DateTime @default(now())
+
+  @@map("claims")
+}
+
+model Shortlink {
+  id             String           @id @default(cuid())
+  title          String
+  url            String
+  reward         Float
+  currency       String           @default("BTC")
+  visitsRequired Int              @default(1)
+  totalVisits    Int              @default(0)
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  visits         ShortlinkVisit[]
+
+  @@map("shortlinks")
+}
+
+model ShortlinkVisit {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  shortlinkId String
+  shortlink   Shortlink @relation(fields: [shortlinkId], references: [id])
+  ipAddress   String?
+  completed   Boolean   @default(false)
+  visitedAt   DateTime  @default(now())
+
+  @@map("shortlink_visits")
+}
+
+model Withdrawal {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  amount      Float
+  currency    String
+  address     String
+  status      String    @default("pending")
+  txHash      String?
+  fee         Float     @default(0)
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+
+  @@map("withdrawals")
+}
+
+model ReferralEarning {
+  id         String   @id @default(cuid())
+  referrerId String
+  referrer   User     @relation("ReferrerEarnings", fields: [referrerId], references: [id])
+  referredId String
+  amount     Float
+  currency   String   @default("BTC")
+  source     String
+  createdAt  DateTime @default(now())
+
+  @@map("referral_earnings")
+}
+
+model DailyBonus {
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id])
+  streak    Int       @default(0)
+  lastClaim DateTime?
+  createdAt DateTime  @default(now())
+
+  @@map("daily_bonuses")
+}
+
+model FraudFlag {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  reason      String
+  ipAddress   String?
+  fingerprint String?
+  resolved    Boolean  @default(false)
+  flaggedAt   DateTime @default(now())
+
+  @@map("fraud_flags")
+}
+
+model FaucetConfig {
+  id           String   @id @default(cuid())
+  rewardMin    Float    @default(0.00000050)
+  rewardMax    Float    @default(0.00000200)
+  timerMinutes Int      @default(60)
+  currency     String   @default("BTC")
+  isActive     Boolean  @default(true)
+  updatedAt    DateTime @updatedAt
+
+  @@map("faucet_config")
+}
+
+model AdminLog {
+  id           String   @id @default(cuid())
+  adminId      String
+  action       String
+  targetUserId String?
+  details      String?
+  createdAt    DateTime @default(now())
+
+  @@map("admin_logs")
+}
