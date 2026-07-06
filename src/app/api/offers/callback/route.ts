@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
     }
 
     return new NextResponse('1', { status: 200 })
-  } catch (error) {
+  } catch {
     return new NextResponse('ERROR', { status: 500 })
   }
 }

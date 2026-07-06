@@ -124,7 +124,7 @@ export async function GET() {
       .single()
 
     return NextResponse.json({ withdrawals: withdrawals || [], balances: user })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

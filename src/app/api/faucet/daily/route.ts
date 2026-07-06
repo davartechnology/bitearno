@@ -41,7 +41,7 @@ export async function GET() {
       nextReward: getDailyReward(streak),
       currency: 'BTC',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }
@@ -108,7 +108,7 @@ export async function POST() {
       currency: 'BTC',
       message: `Daily bonus claimed! +${reward.toFixed(8)} BTC 🎉`,
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

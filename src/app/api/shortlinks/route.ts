@@ -20,15 +20,15 @@ export async function GET() {
       .eq('userId', session.user.id)
       .eq('completed', true)
 
-    const completedIds = new Set((visits || []).map((v: any) => v.shortlinkId))
+    const completedIds = new Set((visits || []).map((v: { shortlinkId: string }) => v.shortlinkId))
 
-    const result = (shortlinks || []).map((link: any) => ({
+    const result = (shortlinks || []).map((link: Record<string, unknown>) => ({
       ...link,
       completed: completedIds.has(link.id),
     }))
 
     return NextResponse.json({ shortlinks: result })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

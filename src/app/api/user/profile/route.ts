@@ -43,7 +43,7 @@ export async function GET() {
         },
       },
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }
@@ -70,7 +70,7 @@ export async function PATCH(req: NextRequest) {
 
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-    const updateData: any = { updatedAt: new Date().toISOString() }
+    const updateData: Record<string, unknown> = { updatedAt: new Date().toISOString() }
 
     if (username && username !== user.username) {
       const { data: existing } = await supabaseAdmin

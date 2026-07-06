@@ -41,7 +41,7 @@ export async function GET() {
       .eq('status', 'approved')
 
     const totalPayouts = (approvedWithdrawals || []).reduce(
-      (sum: number, w: any) => sum + (w.amount || 0), 0
+      (sum: number, w: Record<string, unknown>) => sum + Number((w.amount as number | undefined) || 0), 0
     )
 
     const { data: recentClaims } = await supabaseAdmin
@@ -63,8 +63,8 @@ export async function GET() {
       .limit(5)
 
     const userIds = Array.from(new Set([
-        ...(recentClaims || []).map((c: any) => c.userId),
-        ...(recentWithdrawals || []).map((w: any) => w.userId),
+        ...(recentClaims || []).map((c: Record<string, unknown>) => c.userId as string),
+        ...(recentWithdrawals || []).map((w: Record<string, unknown>) => w.userId as string),
       ]))
 
     const { data: usersMap } = await supabaseAdmin
@@ -72,16 +72,16 @@ export async function GET() {
       .select('id, username')
       .in('id', userIds)
 
-    const usersById = Object.fromEntries((usersMap || []).map((u: any) => [u.id, u]))
+    const usersById = Object.fromEntries((usersMap || []).map((u: { id: string; username: string }) => [u.id, u]))
 
-    const claimsWithUser = (recentClaims || []).map((c: any) => ({
+    const claimsWithUser = (recentClaims || []).map((c: Record<string, unknown> & { userId?: string }) => ({
       ...c,
-      user: usersById[c.userId] || { username: 'Unknown' },
+      user: usersById[c.userId as string] || { username: 'Unknown' },
     }))
 
-    const withdrawalsWithUser = (recentWithdrawals || []).map((w: any) => ({
+    const withdrawalsWithUser = (recentWithdrawals || []).map((w: Record<string, unknown> & { userId?: string }) => ({
       ...w,
-      user: usersById[w.userId] || { username: 'Unknown' },
+      user: usersById[w.userId as string] || { username: 'Unknown' },
     }))
 
     return NextResponse.json({
@@ -99,7 +99,7 @@ export async function GET() {
       recentWithdrawals: withdrawalsWithUser,
       recentUsers: recentUsers || [],
     })
-  } catch (error) {
+  } catch {
     console.error('Admin stats error:', error)
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }

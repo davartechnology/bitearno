@@ -18,7 +18,7 @@ export async function PATCH(
     const { action } = actionSchema.parse(await req.json())
     const userId = params.id
 
-    let updateData: any = { updatedAt: new Date().toISOString() }
+    const updateData: Record<string, unknown> = { updatedAt: new Date().toISOString() }
 
     if (action === 'ban') updateData.isBanned = true
     if (action === 'unban') updateData.isBanned = false
@@ -41,7 +41,7 @@ export async function PATCH(
     })
 
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

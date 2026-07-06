@@ -9,7 +9,7 @@ import { ExternalLink, Shield, Clock } from 'lucide-react'
 export default function RedirectPage() {
   const { id } = useParams()
   const router = useRouter()
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const [seconds, setSeconds] = useState(15)
   const [shortlink, setShortlink] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -29,7 +29,7 @@ export default function RedirectPage() {
   const fetchShortlink = async () => {
     try {
       const res = await axios.get('/api/shortlinks')
-      const found = res.data.shortlinks.find((l: any) => l.id === id)
+      const found = res.data.shortlinks.find((l: { id: string }) => l.id === id)
       if (!found) {
         setError('Shortlink not found')
         return
@@ -70,8 +70,8 @@ export default function RedirectPage() {
       await axios.post('/api/shortlinks/complete', { shortlinkId: id })
       setCompleted(true)
       setTimeout(() => router.push('/shortlinks'), 2000)
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Something went wrong')
+    } catch (err: unknown) {
+      setError((err as { response?: { data?: { error?: string } } }).response?.data?.error || 'Something went wrong')
     }
   }
 

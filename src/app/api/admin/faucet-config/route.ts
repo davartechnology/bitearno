@@ -12,7 +12,7 @@ export async function GET() {
       .from('faucet_config').select('*').single()
 
     return NextResponse.json({ config })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }
@@ -51,7 +51,7 @@ export async function PATCH(req: NextRequest) {
     })
 
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

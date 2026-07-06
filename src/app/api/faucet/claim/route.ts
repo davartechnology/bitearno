@@ -93,13 +93,13 @@ export async function POST(req: NextRequest) {
       xpGained,
       message: `You earned ${reward.toFixed(8)} ${currency}!`,
     })
-  } catch (error) {
-    console.error('Claim error:', error)
+  } catch (err: unknown) {
+    console.error('Claim error:', err)
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -144,7 +144,7 @@ export async function GET(req: NextRequest) {
       currency: config.currency,
       timerMinutes: config.timerMinutes,
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

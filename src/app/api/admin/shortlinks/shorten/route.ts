@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     const shortenedUrl = await shortenUrl(url, provider as keyof typeof SHORTLINK_PROVIDERS)
 
     return NextResponse.json({ shortenedUrl })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

@@ -24,12 +24,9 @@ export async function sendPayment(
 ): Promise<{ success: boolean; message: string; payoutId?: number }> {
   try {
     const currencyCode = CURRENCY_MAP[currency]
-    if (!currencyCode) {
-      return { success: false, message: 'Unsupported currency' }
-    }
+    if (!currencyCode) return { success: false, message: 'Unsupported currency' }
 
     const amountInSatoshi = Math.round(amount * 1e8)
-
     const params = new URLSearchParams()
     params.append('api_key', FAUCETPAY_API_KEY)
     params.append('to', address)
@@ -43,23 +40,14 @@ export async function sendPayment(
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     )
 
-    const data = response.data
-
-    if (data.status === 200) {
-      return {
-        success: true,
-        message: data.message,
-        payoutId: data.payout_id,
-      }
+    if (response.data.status === 200) {
+      return { success: true, message: response.data.message, payoutId: response.data.payout_id }
     }
 
-    return { success: false, message: data.message }
-  } catch (error: any) {
-    console.error('FaucetPay error:', error)
-    return {
-      success: false,
-      message: error.response?.data?.message || 'Payment failed',
-    }
+    return { success: false, message: response.data.message }
+  } catch (err: unknown) {
+    const error = err as { response?: { data?: { message?: string } } }
+    return { success: false, message: error.response?.data?.message || 'Payment failed' }
   }
 }
 
@@ -77,21 +65,14 @@ export async function checkBalance(
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     )
 
-    const data = response.data
-
-    if (data.status === 200) {
-      return {
-        success: true,
-        balance: (data.balance || 0) / 1e8,
-      }
+    if (response.data.status === 200) {
+      return { success: true, balance: (response.data.balance || 0) / 1e8 }
     }
 
-    return { success: false, message: data.message }
-  } catch (error: any) {
-    return {
-      success: false,
-      message: error.response?.data?.message || 'Failed to check balance',
-    }
+    return { success: false, message: response.data.message }
+  } catch (err: unknown) {
+    const error = err as { response?: { data?: { message?: string } } }
+    return { success: false, message: error.response?.data?.message || 'Failed to check balance' }
   }
 }
 

@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
       currency: shortlink.currency,
       message: `You earned ${shortlink.reward.toFixed(8)} ${shortlink.currency}!`,
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

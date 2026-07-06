@@ -28,7 +28,7 @@ export async function GET() {
       .order('createdAt', { ascending: false })
       .limit(20)
 
-    const totalEarnings = (earnings || []).reduce((sum: number, e: any) => sum + (e.amount || 0), 0)
+    const totalEarnings = (earnings || []).reduce((sum: number, e: { amount?: number }) => sum + (e.amount || 0), 0)
 
     const referralLink = `${process.env.NEXT_PUBLIC_APP_URL}/register?ref=${user.referralCode}`
 
@@ -39,7 +39,7 @@ export async function GET() {
       totalEarnings,
       earnings: earnings || [],
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

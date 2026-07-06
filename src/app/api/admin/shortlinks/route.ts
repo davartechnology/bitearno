@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     return NextResponse.json({ success: true, shortlink })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }
@@ -66,7 +66,7 @@ export async function DELETE(req: NextRequest) {
       .eq('id', id)
 
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

@@ -16,7 +16,7 @@ export async function PATCH(
       .eq('id', params.id)
 
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
     const { data: users, count } = await query
 
     const usersWithCounts = await Promise.all(
-      (users || []).map(async (user: any) => {
+      (users || []).map(async (user: { id: string; username: string; email: string }) => {
         const { count: claimsCount } = await supabaseAdmin
           .from('claims').select('*', { count: 'exact', head: true })
           .eq('userId', user.id)
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
       total: count || 0,
       pages: Math.ceil((count || 0) / limit),
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

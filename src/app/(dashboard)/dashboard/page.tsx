@@ -16,7 +16,7 @@ import Link from 'next/link'
 import DailyBonus from '@/components/dashboard/DailyBonus'
 
 export default function DashboardPage() {
-  const { data: session } = useSession()
+  useSession()
   const [stats, setStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 

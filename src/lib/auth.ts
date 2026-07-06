@@ -19,7 +19,7 @@ export const authOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials: any) {
+      async authorize(credentials: Record<string, string> | undefined) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Email and password required')
         }
@@ -30,27 +30,13 @@ export const authOptions = {
           .eq('email', credentials.email)
           .single()
 
-        if (error || !user) {
-          throw new Error('Invalid credentials')
-        }
-
-        if (!user.isVerified) {
-          throw new Error('Please verify your email first')
-        }
-
-        if (user.isBanned) {
-          throw new Error('Your account has been banned')
-        }
-
-        if (user.isSuspended) {
-          throw new Error('Your account has been suspended')
-        }
+        if (error || !user) throw new Error('Invalid credentials')
+        if (!user.isVerified) throw new Error('Please verify your email first')
+        if (user.isBanned) throw new Error('Your account has been banned')
+        if (user.isSuspended) throw new Error('Your account has been suspended')
 
         const isValid = await bcrypt.compare(credentials.password, user.password)
-
-        if (!isValid) {
-          throw new Error('Invalid credentials')
-        }
+        if (!isValid) throw new Error('Invalid credentials')
 
         await supabaseAdmin
           .from('users')
@@ -67,7 +53,7 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }: { token: any; user?: any }) {
+    async jwt({ token, user }: { token: Record<string, unknown>; user?: Record<string, unknown> }) {
       if (user) {
         token.id = user.id
         token.username = user.username
@@ -75,7 +61,7 @@ export const authOptions = {
       }
       return token
     },
-    async session({ session, token }: { session: any; token: any }) {
+    async session({ session, token }: { session: Record<string, unknown> & { user: Record<string, unknown> }; token: Record<string, unknown> }) {
       if (token) {
         session.user.id = token.id
         session.user.username = token.username

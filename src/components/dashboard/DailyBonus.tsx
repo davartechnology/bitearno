@@ -62,8 +62,8 @@ export default function DailyBonus() {
         streak: res.data.streak,
       }))
       setSecondsLeft(24 * 60 * 60)
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Something went wrong')
+    } catch (err: unknown) {
+      setError((err as { response?: { data?: { error?: string } } }).response?.data?.error || 'Something went wrong')
     } finally {
       setClaiming(false)
     }
@@ -86,7 +86,7 @@ export default function DailyBonus() {
 
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-gray-400 text-sm">Today's reward</p>
+          <p className="text-gray-400 text-sm">Today&apos;s reward</p>
           <p className="text-yellow-400 font-bold mt-1">
             {formatCrypto(status?.nextReward || 0, 'BTC')}
           </p>

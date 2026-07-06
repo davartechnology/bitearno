@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
       .insert({ id: crypto.randomUUID(), userId: id, streak: 0 })
 
     return NextResponse.json({ success: true, message: 'Account created successfully' })
-  } catch (error) {
+  } catch {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.issues[0].message }, { status: 400 })
     }
